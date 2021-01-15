@@ -49,17 +49,22 @@ namespace ShooterServer
         internal static void Socke_ConnectionReceived(int connectionID)
         {
             Console.WriteLine("Connection received on index[" + connectionID + "]");
-            NetworkSend.WelomeMessage(connectionID, "Welcome to the Server!");
-            GameManager.CreatePlayer(connectionID);
+            //NetworkSend.WelomeMessage(connectionID, "Welcome to the Server!");
+            //GameManager.CreatePlayer(connectionID);
         }
 
         internal static void Socket_ConnectionLost(int connectionID)
         {
             Console.WriteLine("Connection lost on index[" + connectionID + "]");
-            Player player = GameManager.playerList[connectionID];
-            player.SavePlayer();
-            NetworkSend.DeletePlayer(connectionID);
-            GameManager.playerList.Remove(connectionID);
+            if (GameManager.playerList.ContainsKey(connectionID))
+            {
+                GameManager.SavePlayer(GameManager.playerList[connectionID]);
+                GameManager.playerList.Remove(connectionID);
+            }
+            //Player player = GameManager.playerList[connectionID];
+            //player.SavePlayer();
+            //NetworkSend.DeletePlayer(connectionID);
+            //GameManager.playerList.Remove(connectionID);
         }
 
     }

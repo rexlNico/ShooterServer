@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using KaymakNetwork;
-using System.Numerics;
+﻿using KaymakNetwork;
+using MySql.Data.MySqlClient;
 
 namespace ShooterServer
 {
     enum ClientPackets
     {
-        CPlayerLocation = 1,
-        CPlayerMoveUpdate,
+        CPlayerLogin = 1,
+        CPlayerMove,
+        CPlayerLook
     }
 
     internal static class NetworkReceive
@@ -17,44 +15,30 @@ namespace ShooterServer
 
         internal static void PacketRouter()
         {
-            NetworkConfig.socket.PacketId[(int)ClientPackets.CPlayerLocation] = Packet_PlayerLocation;
-            NetworkConfig.socket.PacketId[(int)ClientPackets.CPlayerMoveUpdate] = Packet_PlayerMoveUpdate;
+            NetworkConfig.socket.PacketId[(int)ClientPackets.CPlayerLogin] = Packet_PlayerLogin;
         }
 
-        private static void Packet_PlayerMoveUpdate(int connectionID, ref byte[] data)
-        {
-            Player player = GameManager.playerList[connectionID];
-            ByteBuffer buffer = new ByteBuffer(data);
-            float deltaTime = buffer.ReadSingle();
-            bool isGrounded = buffer.ReadBoolean();
-            bool hasJumped = buffer.ReadBoolean();
-            Vector2 movement = new Vector2(buffer.ReadSingle(), buffer.ReadSingle());
-            Vector3 forward = new Vector3(buffer.ReadSingle(), buffer.ReadSingle(), buffer.ReadSingle());
-            Vector3 right = new Vector3(buffer.ReadSingle(), buffer.ReadSingle(), buffer.ReadSingle());
-            Vector2 rotation = new Vector2(buffer.ReadSingle(), buffer.ReadSingle());
-
-            Vector3 move = right * movement.X + forward * movement.Y;
-
-            InputManager.TryToMove(connectionID, move * player.movementSpeed, deltaTime);
-            InputManager.TryToRotate(connectionID, rotation, deltaTime);
-            player.Update(deltaTime, isGrounded, hasJumped);
-
-            buffer.Dispose();
-        }
-
-        private static void Packet_PlayerLocation(int connectionID, ref byte[] data)
+        private static void Packet_PlayerLogin(int connectionID, ref byte[] data)
         {
             ByteBuffer buffer = new ByteBuffer(data);
-            Vector3 position = new Vector3(buffer.ReadSingle(), buffer.ReadSingle(), buffer.ReadSingle());
-            Vector3 rotationPlayer = new Vector3(buffer.ReadSingle(), buffer.ReadSingle(), buffer.ReadSingle());
-            Vector3 rotationCamera = new Vector3(buffer.ReadSingle(), buffer.ReadSingle(), buffer.ReadSingle());
-
-            Player player = GameManager.playerList[connectionID];
-            player.position = position;
-            player.rotationCamera = rotationCamera;
-            player.rotationPlayer = rotationPlayer;
-
+            string email = buffer.ReadString();
+            bool canLogin = GameManager.CanPlayerLogin(email, buffer.ReadString());
+            NetworkSend.SendPlayerLoginResult(connectionID, canLogin);
             buffer.Dispose();
+            if (canLogin)
+            {
+                string username = "";
+                MySqlDataReader reader = Program.database.GetData("SELECT username FROM Users WHERE EMAIL='"+email+"'");
+                if (reader.HasRows)
+                {
+                    reader.Read();
+                    username = reader.GetString("username");
+                    reader.Close();
+                }
+                Player player = GameManager.TryToLoadPlayer(connectionID, username, email);
+                GameManager.playerList.Add(connectionID, player);
+                NetworkSend.InstantiateNetworkPlayer(connectionID, player);
+            }
         }
 
     }

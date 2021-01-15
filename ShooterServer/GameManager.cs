@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.IO;
+using System.Xml.Serialization;
+using MySql.Data.MySqlClient;
 
 namespace ShooterServer
 {
@@ -9,32 +11,76 @@ namespace ShooterServer
         public static Dictionary<int, Player> playerList = new Dictionary<int, Player>();
         public static float gravity = -19.62f * 1.5f;
 
-        public static void JoinGame(int connectionID, Player player)
-        {
-            NetworkSend.InstantiateNetworkPlayer(connectionID, player);
-        }
-
-        public static void CreatePlayer(int connectionID)
-        {
-            String name = "";
-            Player player = TryToLoadPlayer(connectionID, name);
-            playerList.Add(connectionID, player);
-            Console.WriteLine("Player {1} has been added to the game with id {0}", connectionID, name);
-            JoinGame(connectionID, player);
-        }
-
         public static void SavePlayer(Player player)
         {
+            TextWriter writer = null;
+            try
+            {
+                string path = "playerdata/" + player.username + ".pdata";
+                var serializer = new XmlSerializer(typeof(Player));
+                writer = new StreamWriter(path, false);
+                serializer.Serialize(writer, player);
+            }
+            finally
+            {
+                if (writer != null)
+                    writer.Close();
+            }
 
         }
 
-        public static Player TryToLoadPlayer(int connectionID, string username)
+        public static Player TryToLoadPlayer(int connectionID, string username, string email)
         {
-            return new Player()
+            string path = "playerdata/" + username + ".pdata";
+            if (!File.Exists(path))
             {
-                connectionID = connectionID,
-                inGame = true
-            }; ;
+                File.Create(path).Close();
+                return new Player()
+                {
+                    connectionID = connectionID,
+                    username = username,
+                    location = new System.Numerics.Vector3(0, 5, 0),
+                    rotation = new System.Numerics.Quaternion(),
+                    emai = email
+                };
+            }
+            TextReader reader = null;
+            try
+            {
+                var serializer = new XmlSerializer(typeof(Player));
+                reader = new StreamReader(path);
+                Player player = (Player)serializer.Deserialize(reader);
+                player.connectionID = connectionID;
+                return player;
+            }
+            finally
+            {
+                if (reader != null)
+                {
+                    reader.Close();
+                }
+            }
+        }
+
+        public static bool CanPlayerLogin(string email, string password)
+        {
+            MySqlDataReader reader = Program.database.GetData("SELECT baned FROM Users WHERE email='" + email + "' AND password='" + password + "'");
+            if (reader.HasRows)
+            {
+                reader.Read();
+                if (reader.GetBoolean("baned"))
+                {
+                    reader.Close();
+                    return false;
+                }
+                else
+                {
+                    reader.Close();
+                    return true;
+                }
+            }
+            reader.Close();
+            return false;
         }
 
     }

@@ -8,32 +8,30 @@ namespace ShooterServer
 
     enum ServerPackets
     {
-        SWelcomeMessage = 1,
-        SInstantiatePlayer,
-        SPlayerMove,
-        SPlayerRotate,
-        SPlayerRemove,
+        SPlayerLogin = 1,
+        SPlayerBaned,
+        SPlayerInstantiate
     }
 
     internal static class NetworkSend
     {
-        public static void WelomeMessage(int connectionID, string msg)
+        public static void SendPlayerLoginResult(int connectionID, bool canLogin)
         {
             ByteBuffer buffer = new ByteBuffer(4);
-            buffer.WriteInt32((int)ServerPackets.SWelcomeMessage);
+            buffer.WriteInt32((int)ServerPackets.SPlayerLogin);
             buffer.WriteInt32(connectionID);
-            buffer.WriteString(msg);
+            buffer.WriteBoolean(canLogin);
             NetworkConfig.socket.SendDataTo(connectionID, buffer.Data, buffer.Head);
             buffer.Dispose();
 
         }
 
-        public static void DeletePlayer(int connectionID)
+        public static void SendPlayerBanData(int connectionID, string banreason, string bantime)
         {
             ByteBuffer buffer = new ByteBuffer(4);
-            buffer.WriteInt32((int)ServerPackets.SPlayerRemove);
-            buffer.WriteInt32(connectionID);
-            NetworkConfig.socket.SendDataToAll(buffer.Data, buffer.Head);
+            buffer.WriteInt32((int)ServerPackets.SPlayerLogin);
+            //buffer.WriteBoolean(canLogin);
+            NetworkConfig.socket.SendDataTo(connectionID, buffer.Data, buffer.Head);
             buffer.Dispose();
 
         }
@@ -41,53 +39,33 @@ namespace ShooterServer
         private static ByteBuffer PlayerData(int connectionID, Player player)
         {
             ByteBuffer buffer = new ByteBuffer(4);
-            buffer.WriteInt32((int)ServerPackets.SInstantiatePlayer);
+            buffer.WriteInt32((int)ServerPackets.SPlayerInstantiate);
             buffer.WriteInt32(connectionID);
+            buffer.WriteString(player.username);
+            buffer.WriteSingle(player.location.X);
+            buffer.WriteSingle(player.location.Y);
+            buffer.WriteSingle(player.location.Z);
+            buffer.WriteSingle(player.rotation.X);
+            buffer.WriteSingle(player.rotation.Y);
+            buffer.WriteSingle(player.rotation.Z);
+            buffer.WriteSingle(player.rotation.W);
             return buffer;
         }
 
-        public static void SendPlayerRotation(int connectionID, Vector2 rotations)
-        {
-            ByteBuffer buffer = new ByteBuffer(4);
-            buffer.WriteInt32((int)ServerPackets.SPlayerRotate);
-            buffer.WriteInt32(connectionID);
-            buffer.WriteSingle(rotations.X);
-            buffer.WriteSingle(rotations.Y);
-            NetworkConfig.socket.SendDataToAll(buffer.Data, buffer.Head);
-
-            buffer.Dispose();
-        }
-
-        public static void SendPlayerMove(int connectionID, Vector3 movement)
-        {
-            ByteBuffer buffer = new ByteBuffer(4);
-            buffer.WriteInt32((int)ServerPackets.SPlayerMove);
-            buffer.WriteInt32(connectionID);
-            buffer.WriteSingle(movement.X);
-            buffer.WriteSingle(movement.Y);
-            buffer.WriteSingle(movement.Z);
-            NetworkConfig.socket.SendDataToAll(buffer.Data, buffer.Head);
-
-            buffer.Dispose();
-        }
 
         public static void InstantiateNetworkPlayer(int connectionID, Player player)
         {
-            for (int i = 1; i <= GameManager.playerList.Count; i++)
+            foreach (var item in GameManager.playerList)
             {
-                if(GameManager.playerList[i] != null)
+                if (item.Key == connectionID)
                 {
-                    if (GameManager.playerList[i].inGame)
-                    {
-                        if(i != connectionID)
-                        {
-                            NetworkConfig.socket.SendDataTo(connectionID, PlayerData(i, player).Data, PlayerData(i, player).Head);
-                        }
-                    }
+                    NetworkConfig.socket.SendDataToAll(PlayerData(connectionID, player).Data, PlayerData(connectionID, player).Head);
+                }
+                else
+                {
+                    NetworkConfig.socket.SendDataTo(connectionID, PlayerData(item.Key, player).Data, PlayerData(item.Key, player).Head);
                 }
             }
-            NetworkConfig.socket.SendDataToAll(PlayerData(connectionID, player).Data, PlayerData(connectionID, player).Head);
         }
-
     }
 }
