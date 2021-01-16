@@ -14,7 +14,7 @@ namespace ShooterServer
             CommandManager.InitCommandManager();
             database = new Database();
             NetworkConfig.InitNetwork();
-            NetworkConfig.socket.StartListening(5555, 5, 1);
+            NetworkConfig.socket.StartListening(Int32.Parse(args[0]), 5, 1);
             Console.WriteLine("Network initialized!");
             //long bin = DateTime.Now.ToBinary();
         }

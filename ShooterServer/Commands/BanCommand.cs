@@ -20,7 +20,7 @@ namespace ShooterServer.Commands
                     {
                         reader.Close();
                         Program.database.Query("UPDATE Users SET baned=1, bantime=-1 WHERE username='" + username + "'");
-                        Console.WriteLine("Baned Player " + username);
+                        Console.WriteLine("["+DateTime.Now+"] Baned Player " + username);
                     }
                     else
                     {
