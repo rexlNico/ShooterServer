@@ -22,6 +22,7 @@ namespace ShooterServer
             buffer.WriteInt32(connectionID);
             buffer.WriteBoolean(canLogin);
             NetworkConfig.socket.SendDataTo(connectionID, buffer.Data, buffer.Head);
+            Console.WriteLine("Login: "+connectionID + " "+ canLogin);
             buffer.Dispose();
 
         }

@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "ShooterServer": {
+      "commandName": "Project",
+      "commandLineArgs": "5555",
+      "remoteDebugEnabled": false,
+      "sqlDebugging": false,
+      "nativeDebugging": false
+    }
+  }
+}
