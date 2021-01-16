@@ -22,7 +22,6 @@ namespace ShooterServer
         {
             ByteBuffer buffer = new ByteBuffer(data);
             string email = buffer.ReadString();
-            System.Console.WriteLine("Login try from " + connectionID + " " + email);
             bool canLogin = GameManager.CanPlayerLogin(email, buffer.ReadString());
             NetworkSend.SendPlayerLoginResult(connectionID, canLogin);
             buffer.Dispose();
