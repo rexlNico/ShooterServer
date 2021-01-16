@@ -17,6 +17,7 @@ namespace ShooterServer
             commands.Add("help", new HelpCommand());
             commands.Add("ban", new BanCommand());
             commands.Add("unban", new UnbanCommand());
+            commands.Add("stop", new StopCommand());
         }
 
         public static void ExecuteCommand(string input)

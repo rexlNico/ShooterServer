@@ -8,7 +8,6 @@ namespace ShooterServer.Commands
 {
     class HelpCommand : Command
     {
-
         public HelpCommand() : base("help <command> -> Shows this help page") { }
         public override void ExecuteCommand(string command, string args)
         {
