@@ -15,7 +15,7 @@ namespace ShooterServer
             database = new Database();
             NetworkConfig.InitNetwork();
             NetworkConfig.socket.StartListening(Int32.Parse(args[0]), 5, 1);
-            Console.WriteLine("Network initialized!");
+            Console.WriteLine("Network initialized on port "+args[0]);
             //long bin = DateTime.Now.ToBinary();
         }
 
