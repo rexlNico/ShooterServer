@@ -39,9 +39,8 @@ namespace ShooterServer
                 {
                     connectionID = connectionID,
                     username = username,
-                    location = new System.Numerics.Vector3(0, 5, 0),
-                    rotation = new System.Numerics.Quaternion(),
-                    emai = email
+                    emai = email,
+                    inputManager = new InputManager()
                 };
             }
             TextReader reader = null;

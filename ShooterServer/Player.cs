@@ -11,8 +11,7 @@ namespace ShooterServer
         public string username;
         public string emai;
 
-        public Vector3 location;
-        public Quaternion rotation;
+        public InputManager inputManager;
 
     }
 
