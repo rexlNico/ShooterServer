@@ -8,8 +8,7 @@ namespace ShooterServer
     {
         CPlayerLogin = 1,
         CPlayerMove,
-        CPlayerLook,
-        CPlayerInputs
+        CPlayerLook
     }
 
     internal static class NetworkReceive
@@ -18,24 +17,17 @@ namespace ShooterServer
         internal static void PacketRouter()
         {
             NetworkConfig.socket.PacketId[(int)ClientPackets.CPlayerLogin] = Packet_PlayerLogin;
-            NetworkConfig.socket.PacketId[(int)ClientPackets.CPlayerInputs] = Packet_PlayerInputs;
             NetworkConfig.socket.PacketId[(int)ClientPackets.CPlayerLook] = Packet_PlayerLook;
             NetworkConfig.socket.PacketId[(int)ClientPackets.CPlayerMove] = Packet_PlayerMove;
-        }
-
-        private static void Packet_PlayerInputs(int connectionID, ref byte[] data)
-        {
-            ByteBuffer buffer = new ByteBuffer(data);
-            Player player = GameManager.playerList[connectionID];
-            player.inputManager.MyInput(connectionID, buffer.ReadSingle(), buffer.ReadSingle(), buffer.ReadBoolean(), buffer.ReadBoolean(), buffer.ReadBoolean(), buffer.ReadBoolean(), buffer.ReadBoolean(), new Vector3(buffer.ReadSingle(), buffer.ReadSingle(), buffer.ReadSingle()), buffer.ReadSingle());
-            buffer.Dispose();
         }
 
         private static void Packet_PlayerLook(int connectionID, ref byte[] data)
         {
             ByteBuffer buffer = new ByteBuffer(data);
             Player player = GameManager.playerList[connectionID];
-            player.inputManager.Look(buffer.ReadSingle(), buffer.ReadSingle(), new Vector3(buffer.ReadSingle(), buffer.ReadSingle(), buffer.ReadSingle()), buffer.ReadSingle());
+            Quaternion lastLook = new Quaternion(buffer.ReadSingle(), buffer.ReadSingle(), buffer.ReadSingle(), buffer.ReadSingle());
+            Quaternion look = new Quaternion(buffer.ReadSingle(), buffer.ReadSingle(), buffer.ReadSingle(), buffer.ReadSingle());
+            MovementManager.PlayerLooking(player, lastLook, look);
             buffer.Dispose();
         }
 
@@ -43,7 +35,9 @@ namespace ShooterServer
         {
             ByteBuffer buffer = new ByteBuffer(data);
             Player player = GameManager.playerList[connectionID];
-            player.inputManager.Movement(new Vector3(buffer.ReadSingle(), buffer.ReadSingle(), buffer.ReadSingle()), new Vector2(buffer.ReadSingle(), buffer.ReadSingle()), new Vector3(buffer.ReadSingle(), buffer.ReadSingle(), buffer.ReadSingle()), buffer.ReadSingle());
+            Vector3 lastPosition = new Vector3(buffer.ReadSingle(), buffer.ReadSingle(), buffer.ReadSingle());
+            Vector3 position = new Vector3(buffer.ReadSingle(), buffer.ReadSingle(), buffer.ReadSingle());
+            MovementManager.PlayerMovement(player, lastPosition, position);
             buffer.Dispose();
         }
 
