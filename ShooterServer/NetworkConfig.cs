@@ -55,12 +55,6 @@ namespace ShooterServer
 
         internal static void Socket_ConnectionLost(int connectionID)
         {
-            Console.WriteLine("Connection lost on index[" + connectionID + "]");
-            if (GameManager.playerList.ContainsKey(connectionID))
-            {
-                GameManager.SavePlayer(GameManager.playerList[connectionID]);
-                GameManager.playerList.Remove(connectionID);
-            }
             //Player player = GameManager.playerList[connectionID];
             //player.SavePlayer();
             //NetworkSend.DeletePlayer(connectionID);

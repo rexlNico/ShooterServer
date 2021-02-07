@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml.Serialization;
 using MySql.Data.MySqlClient;
+using System.Numerics;
 
 namespace ShooterServer
 {
@@ -16,7 +17,7 @@ namespace ShooterServer
             TextWriter writer = null;
             try
             {
-                string path = "playerdata/" + player.username + ".pdata";
+                string path = "playerdata/" + player.emai + ".pdata";
                 var serializer = new XmlSerializer(typeof(Player));
                 writer = new StreamWriter(path, false);
                 serializer.Serialize(writer, player);
@@ -31,7 +32,7 @@ namespace ShooterServer
 
         public static Player TryToLoadPlayer(int connectionID, string username, string email)
         {
-            string path = "playerdata/" + username + ".pdata";
+            string path = "playerdata/" + email + ".pdata";
             if (!File.Exists(path))
             {
                 File.Create(path).Close();
@@ -40,6 +41,8 @@ namespace ShooterServer
                     connectionID = connectionID,
                     username = username,
                     emai = email,
+                    location = new Vector3(0, 10, 0),
+                    looking = new Quaternion(0, 0, 0, 0)
                 };
             }
             TextReader reader = null;

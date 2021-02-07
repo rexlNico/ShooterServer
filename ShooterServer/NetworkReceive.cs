@@ -1,5 +1,6 @@
 ﻿using KaymakNetwork;
 using MySql.Data.MySqlClient;
+using System;
 using System.Numerics;
 
 namespace ShooterServer
@@ -7,6 +8,7 @@ namespace ShooterServer
     enum ClientPackets
     {
         CPlayerLogin = 1,
+        CPlayerQuit,
         CPlayerMove,
         CPlayerLook
     }
@@ -17,8 +19,19 @@ namespace ShooterServer
         internal static void PacketRouter()
         {
             NetworkConfig.socket.PacketId[(int)ClientPackets.CPlayerLogin] = Packet_PlayerLogin;
+            NetworkConfig.socket.PacketId[(int)ClientPackets.CPlayerQuit] = Packet_PlayerQuit;
             NetworkConfig.socket.PacketId[(int)ClientPackets.CPlayerLook] = Packet_PlayerLook;
             NetworkConfig.socket.PacketId[(int)ClientPackets.CPlayerMove] = Packet_PlayerMove;
+        }
+
+        private static void Packet_PlayerQuit(int connectionID, ref byte[] data)
+        {
+            Console.WriteLine("Disconnecting index[" + connectionID + "]");
+            if (GameManager.playerList.ContainsKey(connectionID))
+            {
+                GameManager.SavePlayer(GameManager.playerList[connectionID]);
+                GameManager.playerList.Remove(connectionID);
+            }
         }
 
         private static void Packet_PlayerLook(int connectionID, ref byte[] data)
