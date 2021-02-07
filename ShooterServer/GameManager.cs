@@ -40,7 +40,6 @@ namespace ShooterServer
                     connectionID = connectionID,
                     username = username,
                     emai = email,
-                    inputManager = new InputManager()
                 };
             }
             TextReader reader = null;
