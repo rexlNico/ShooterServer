@@ -6,7 +6,7 @@ namespace ShooterServer
 {
     public class Inventory
     {
-        private int limit = 1;
+        private int limit = -1;
         private Dictionary<int, Item> inventroy = new Dictionary<int, Item>();
 
         public bool HasSlotItem(int slot)
