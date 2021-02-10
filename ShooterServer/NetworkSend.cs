@@ -54,11 +54,12 @@ namespace ShooterServer
             buffer.Dispose();
         }
 
-        public static void SendPlayerBanData(int connectionID, string banreason, string bantime)
+        public static void SendPlayerBanData(int connectionID, string banreason, long bantime)
         {
             ByteBuffer buffer = new ByteBuffer(4);
-            buffer.WriteInt32((int)ServerPackets.SPlayerLogin);
-            //buffer.WriteBoolean(canLogin);
+            buffer.WriteInt32((int)ServerPackets.SPlayerBaned);
+            buffer.WriteString(banreason);
+            buffer.WriteSingle(bantime);
             NetworkConfig.socket.SendDataTo(connectionID, buffer.Data, buffer.Head);
             buffer.Dispose();
 
@@ -83,15 +84,16 @@ namespace ShooterServer
 
         public static void InstantiateNetworkPlayer(int connectionID, Player player)
         {
+            ByteBuffer dataD = PlayerData(connectionID, player);
+            NetworkConfig.socket.SendDataToAll(dataD.Data, dataD.Head);
+            dataD.Dispose();
             foreach (var item in GameManager.playerList)
             {
-                if (item.Key == connectionID)
+                if (item.Key != connectionID)
                 {
-                    NetworkConfig.socket.SendDataToAll(PlayerData(connectionID, player).Data, PlayerData(connectionID, player).Head);
-                }
-                else
-                {
-                    NetworkConfig.socket.SendDataTo(connectionID, PlayerData(item.Key, player).Data, PlayerData(item.Key, player).Head);
+                    ByteBuffer data = PlayerData(item.Key, player);
+                    NetworkConfig.socket.SendDataTo(connectionID, data.Data, data.Head);
+                    data.Dispose();
                 }
             }
         }

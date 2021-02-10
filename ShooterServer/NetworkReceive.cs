@@ -77,6 +77,21 @@ namespace ShooterServer
                 GameManager.playerList.Add(connectionID, player);
                 NetworkSend.InstantiateNetworkPlayer(connectionID, player);
             }
+            else
+            {
+                MySqlDataReader reader = Program.database.GetData("SELECT * FROM Users WHERE EMAIL='" + email + "'");
+                if (reader.HasRows)
+                {
+                    reader.Read();
+                    if (reader.GetBoolean("baned"))
+                    {
+                        string reason = reader.GetString("banreason");
+                        long bantime = reader.GetInt64("bantime");
+                        NetworkSend.SendPlayerBanData(connectionID, reason, bantime);
+                    }
+                }
+                reader.Close();
+            }
         }
 
     }
