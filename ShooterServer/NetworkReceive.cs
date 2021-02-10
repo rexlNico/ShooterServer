@@ -26,12 +26,14 @@ namespace ShooterServer
 
         private static void Packet_PlayerQuit(int connectionID, ref byte[] data)
         {
+            ByteBuffer buffer = new ByteBuffer(data);
             Console.WriteLine("Disconnecting index[" + connectionID + "]");
             if (GameManager.playerList.ContainsKey(connectionID))
             {
                 GameManager.SavePlayer(GameManager.playerList[connectionID]);
                 GameManager.playerList.Remove(connectionID);
             }
+            buffer.Dispose();
         }
 
         private static void Packet_PlayerLook(int connectionID, ref byte[] data)

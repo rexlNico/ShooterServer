@@ -41,7 +41,7 @@ namespace ShooterServer
                     connectionID = connectionID,
                     username = username,
                     emai = email,
-                    location = new Vector3(0, 10, 0),
+                    location = new Vector3(720, 79, 463),
                     looking = new Quaternion(0, 0, 0, 0)
                 };
             }
