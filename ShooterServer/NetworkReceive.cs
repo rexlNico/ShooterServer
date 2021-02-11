@@ -20,8 +20,8 @@ namespace ShooterServer
         {
             NetworkConfig.socket.PacketId[(int)ClientPackets.CPlayerLogin] = Packet_PlayerLogin;
             NetworkConfig.socket.PacketId[(int)ClientPackets.CPlayerQuit] = Packet_PlayerQuit;
-            NetworkConfig.socket.PacketId[(int)ClientPackets.CPlayerLook] = Packet_PlayerLook;
             NetworkConfig.socket.PacketId[(int)ClientPackets.CPlayerMove] = Packet_PlayerMove;
+            NetworkConfig.socket.PacketId[(int)ClientPackets.CPlayerLook] = Packet_PlayerLook;
         }
 
         private static void Packet_PlayerQuit(int connectionID, ref byte[] data)
