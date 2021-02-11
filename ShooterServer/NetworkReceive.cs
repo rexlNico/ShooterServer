@@ -52,9 +52,9 @@ namespace ShooterServer
             Player player = GameManager.playerList[connectionID];
             Vector3 lastPosition = new Vector3(buffer.ReadSingle(), buffer.ReadSingle(), buffer.ReadSingle());
             Vector3 position = new Vector3(buffer.ReadSingle(), buffer.ReadSingle(), buffer.ReadSingle());
+            Console.WriteLine("move: " + connectionID + " POS: " + position + " LAST: " + lastPosition);
             MovementManager.PlayerMovement(player, lastPosition, position);
             buffer.Dispose();
-            Console.WriteLine("move: " + connectionID + " POS: " + position+" LAST: "+lastPosition);
         }
 
         private static void Packet_PlayerLogin(int connectionID, ref byte[] data)
