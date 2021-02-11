@@ -11,12 +11,24 @@ namespace ShooterServer
         SPlayerLogin = 1,
         SPlayerBaned,
         SPlayerInstantiate,
+        SPingAnswer,
         SPlayerMove,
         SPlayerLook
     }
 
     internal static class NetworkSend
     {
+
+        public static void SendPingAnswer(int connectionID)
+        {
+            ByteBuffer buffer = new ByteBuffer(4);
+            buffer.WriteInt32((int)ServerPackets.SPingAnswer);
+            buffer.WriteInt32(connectionID);
+            NetworkConfig.socket.SendDataTo(connectionID, buffer.Data, buffer.Head);
+            buffer.Dispose();
+
+        }
+
         public static void SendPlayerLoginResult(int connectionID, bool canLogin)
         {
             ByteBuffer buffer = new ByteBuffer(4);

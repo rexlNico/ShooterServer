@@ -54,6 +54,7 @@ namespace ShooterServer
             Vector3 position = new Vector3(buffer.ReadSingle(), buffer.ReadSingle(), buffer.ReadSingle());
             MovementManager.PlayerMovement(player, lastPosition, position);
             buffer.Dispose();
+            Console.WriteLine("move: " + connectionID + " POS: " + position+" LAST: "+lastPosition);
         }
 
         private static void Packet_PlayerLogin(int connectionID, ref byte[] data)

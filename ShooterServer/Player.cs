@@ -7,6 +7,9 @@ namespace ShooterServer
 {
     public class Player
     {
+
+        public long lastPing;
+
         public int connectionID;
         public string username;
         public string emai;

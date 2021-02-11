@@ -57,7 +57,9 @@ namespace ShooterServer
         {
             MySqlCommand mcommand = new MySqlCommand(command, connection);
             Console.WriteLine(command);
-            return mcommand.ExecuteReader();
+            MySqlDataReader ret = mcommand.ExecuteReader();
+            ret.Close();
+            return ret;
         }
 
         public MySqlDataReader GetData(MySqlCommand command)
