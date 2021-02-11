@@ -71,11 +71,11 @@ namespace ShooterServer
                 {
                     reader.Read();
                     username = reader.GetString("username");
-                    reader.Close();
                 }
                 Player player = GameManager.TryToLoadPlayer(connectionID, username, email);
                 GameManager.playerList.Add(connectionID, player);
                 NetworkSend.InstantiateNetworkPlayer(connectionID, player);
+                reader.Close();
             }
             else
             {

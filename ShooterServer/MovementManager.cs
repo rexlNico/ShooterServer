@@ -10,7 +10,7 @@ namespace ShooterServer
             //MOVEMENT CHECK
 
             player.location = pos;
-            
+            NetworkSend.SendPlayerPosition(player.connectionID, pos);
         }
 
         public static void PlayerLooking(Player player, Quaternion lastLooking, Quaternion looking)
@@ -18,6 +18,7 @@ namespace ShooterServer
             //LOOKING CHECK
 
             player.looking = looking;
+            NetworkSend.SendPlayerLook(player.connectionID, looking);
         }
 
     }

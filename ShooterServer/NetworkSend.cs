@@ -91,6 +91,7 @@ namespace ShooterServer
             {
                 if (item.Key != connectionID)
                 {
+                    Console.WriteLine(connectionID + " ");
                     ByteBuffer data = PlayerData(item.Key, player);
                     NetworkConfig.socket.SendDataTo(connectionID, data.Data, data.Head);
                     data.Dispose();
