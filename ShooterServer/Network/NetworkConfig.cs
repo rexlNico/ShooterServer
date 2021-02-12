@@ -38,8 +38,8 @@ namespace ShooterServer
             socket = new Server(1000)
             {
                 BufferLimit = 2048000,
-                PacketAcceptLimit = 100000,
-                PacketDisconnectCount = 200000
+                PacketAcceptLimit = 100,
+                PacketDisconnectCount = 150
             };
 
             NetworkReceive.PacketRouter();
