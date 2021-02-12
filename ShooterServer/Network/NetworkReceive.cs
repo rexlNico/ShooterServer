@@ -40,9 +40,8 @@ namespace ShooterServer
         {
             ByteBuffer buffer = new ByteBuffer(data);
             Player player = GameManager.playerList[connectionID];
-            Quaternion lastLook = new Quaternion(buffer.ReadSingle(), buffer.ReadSingle(), buffer.ReadSingle(), buffer.ReadSingle());
             Quaternion look = new Quaternion(buffer.ReadSingle(), buffer.ReadSingle(), buffer.ReadSingle(), buffer.ReadSingle());
-            MovementManager.PlayerLooking(player, lastLook, look);
+            MovementManager.PlayerLooking(player, look);
             buffer.Dispose();
         }
 
@@ -50,10 +49,9 @@ namespace ShooterServer
         {
             ByteBuffer buffer = new ByteBuffer(data);
             Player player = GameManager.playerList[connectionID];
-            Vector3 lastPosition = new Vector3(buffer.ReadSingle(), buffer.ReadSingle(), buffer.ReadSingle());
             Vector3 position = new Vector3(buffer.ReadSingle(), buffer.ReadSingle(), buffer.ReadSingle());
-            Console.WriteLine("move: " + connectionID + " POS: " + position + " LAST: " + lastPosition);
-            MovementManager.PlayerMovement(player, lastPosition, position);
+            Console.WriteLine("move: " + connectionID + " POS: " + position);
+            MovementManager.PlayerMovement(player, position);
             buffer.Dispose();
         }
 

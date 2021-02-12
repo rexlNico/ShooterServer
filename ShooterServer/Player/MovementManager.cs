@@ -5,7 +5,7 @@ namespace ShooterServer
     class MovementManager
     {
 
-        public static void PlayerMovement(Player player, Vector3 lastPos, Vector3 pos)
+        public static void PlayerMovement(Player player, Vector3 pos)
         {
             //MOVEMENT CHECK
 
@@ -13,7 +13,7 @@ namespace ShooterServer
             NetworkSend.SendPlayerPosition(player.connectionID, pos);
         }
 
-        public static void PlayerLooking(Player player, Quaternion lastLooking, Quaternion looking)
+        public static void PlayerLooking(Player player, Quaternion looking)
         {
             //LOOKING CHECK
 
